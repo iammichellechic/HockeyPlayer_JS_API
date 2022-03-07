@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hockey Players</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
+    />
+    <!-- MDB -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body class="d-flex flex-column h-100">
+    <header>
+      <nav class="navbar navbar-expand-md navbar-light fixed-top bg-light">
+        <div class="container-fluid">
+          <a class="navbar-brand" id="listPlayers" href="#">Hockey</a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarCollapse"
+            aria-controls="navbarCollapse"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav me-auto mb-2 mb-md-0">
+              <li class="nav-item">
+                <a
+                  id="listPlayers"
+                  class="nav-link"
+                  aria-current="page"
+                  href="#"
+                  >All Players</a
+                >
+              </li>
+              <li class="nav-item">
+                <a id="newPlayers" class="nav-link" href="#">Add New</a>
+              </li>
+              <li class="nav-item">
+                <a id="editPlayers" class="nav-link" href="#">Edit</a>
+              </li>
+            </ul>
+            <form class="d-flex">
+              <input
+                id="searchbar"
+                onkeyup="search_player()"
+                class="form-control me-2 search-by-name"
+                type="text"
+                placeholder="Type a player name"
+                aria-label="Search"
+              />
+              <!-- <button class="btn btn-outline-success" type="submit">
+                Search
+              </button> -->
+            </form>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <main class="flex-shrink-0">
+      <input type="hidden" id="playerid" value="0" />
+      <!--All players-->
+      <section id="sectionListPlayers" class="mt-5">
+        <table class="table table-info" id="playersTableList">
+          <thead>
+            <tr class="header">
+              <th scope="col" class="searchItem" onclick="sortTable(0)">
+                PlayerNamn
+              </th>
+              <th scope="col" class="searchItem" onclick="sortTable(1)">
+                Ålder
+              </th>
+              <th scope="col" class="searchItem" onclick="sortTable(2)">
+                Tröjnummer
+              </th>
+              <th scope="col" class="searchItem" onclick="sortTable(3)">
+                Födelsedag
+              </th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody id="productTableBody"></tbody>
+        </table>
+      </section>
+
+      <!--Add new player-->
+      <section id="sectionNewPlayers" class="pb-5">
+        <div class="container py-5">
+          <!-- <div class="col-lg-7 mx-auto"> -->
+          <div class="d-flex flex-column min-vh-100 justify-content-center">
+            <div class="card border-0 shadow">
+              <div class="card-body p-5">
+                <p class="h4 py-4 text-warning text-opacity-20">
+                  Add a new player
+                </p>
+                <form>
+                  <div class="form-group">
+                    <label for="newName"
+                      ><p class="text-secondary text-opacity-50">Namn</p></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="newName"
+                      placeholder="Enter name"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="newAge"
+                      ><p class="text-secondary text-opacity-50">
+                        Ålder
+                      </p></label
+                    >
+                    <input
+                      type="number"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="newAge"
+                      placeholder="Enter age"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="newJersey"
+                      ><p class="text-secondary text-opacity-50">
+                        Tröjnummer
+                      </p></label
+                    >
+                    <input
+                      type="number"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="newJersey"
+                      placeholder="Enter jersey number"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="newBdate"
+                      ><p class="text-secondary text-opacity-50">Född</p></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="newBdate"
+                      placeholder="Enter birthdate"
+                    />
+                  </div>
+
+                  <div class="text-center py-4 mt-3">
+                    <button
+                      class="btn btn-outline-success"
+                      id="submitNewButton"
+                      type="submit"
+                    >
+                      Send<i class="fa fa-paper-plane-o ml-2"></i>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!--Edit-->
+      <section id="sectionEditPlayers" class="pb-5">
+        <div class="container py-5">
+          <div class="d-flex flex-column min-vh-100 justify-content-center">
+            <div class="card border-0 shadow">
+              <div class="card-body p-5">
+                <p class="h4 py-4 text-warning text-opacity-20">Edit player</p>
+                <form>
+                  <div class="form-group">
+                    <label for="editName"
+                      ><p class="text-secondary text-opacity-50">Namn</p></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="editName"
+                      placeholder="Edit name"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="editAge"
+                      ><p class="text-secondary text-opacity-50">
+                        Ålder
+                      </p></label
+                    >
+                    <input
+                      type="number"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="editAge"
+                      placeholder="Edit age"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="editJersey"
+                      ><p class="text-secondary text-opacity-50">
+                        Tröjnummer
+                      </p></label
+                    >
+                    <input
+                      type="number"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="editJersey"
+                      placeholder="Edit jersey number"
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="editBdate"
+                      ><p class="text-secondary text-opacity-50">Född</p></label
+                    >
+                    <input
+                      type="text"
+                      class="form-control bg-secondary p-2 text-white bg-opacity-25"
+                      id="editBdate"
+                      placeholder="Edit birthdate"
+                    />
+                  </div>
+
+                  <div class="text-center py-4 mt-3">
+                    <button
+                      class="btn btn-outline-success"
+                      id="submitEditButton"
+                      type="submit"
+                    >
+                      Edit<i class="fa fa-paper-plane-o ml-2"></i>
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <!-- MDB -->
+    <script
+      type="text/javascript"
+      src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.2/mdb.min.js"
+    ></script>
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="script.js"></script>
+  </body>
+</html>
