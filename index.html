@@ -53,14 +53,10 @@
               <li class="nav-item">
                 <a id="newPlayers" class="nav-link" href="#">Add New</a>
               </li>
-              <li class="nav-item">
-                <a id="editPlayers" class="nav-link" href="#">Edit</a>
-              </li>
             </ul>
             <form class="d-flex">
               <input
                 id="searchbar"
-                onkeyup="search_player()"
                 class="form-control me-2 search-by-name"
                 type="text"
                 placeholder="Type a player name"
@@ -76,24 +72,16 @@
     </header>
 
     <main class="flex-shrink-0">
-      <input type="hidden" id="playerid" value="0" />
+      <!-- <input type="hidden" id="playerid" value="0" /> -->
       <!--All players-->
       <section id="sectionListPlayers" class="mt-5">
         <table class="table table-info" id="playersTableList">
           <thead>
             <tr class="header">
-              <th scope="col" class="searchItem" onclick="sortTable(0)">
-                PlayerNamn
-              </th>
-              <th scope="col" class="searchItem" onclick="sortTable(1)">
-                Ålder
-              </th>
-              <th scope="col" class="searchItem" onclick="sortTable(2)">
-                Tröjnummer
-              </th>
-              <th scope="col" class="searchItem" onclick="sortTable(3)">
-                Födelsedag
-              </th>
+              <th scope="col">PlayerNamn</th>
+              <th scope="col">Ålder</th>
+              <th scope="col">Tröjnummer</th>
+              <th scope="col">Födelsedag</th>
               <th scope="col"></th>
             </tr>
           </thead>
@@ -158,7 +146,7 @@
                       type="text"
                       class="form-control bg-secondary p-2 text-white bg-opacity-25"
                       id="newBdate"
-                      placeholder="Enter birthdate"
+                      placeholder="Enter birthplace"
                     />
                   </div>
 
@@ -233,7 +221,7 @@
                       type="text"
                       class="form-control bg-secondary p-2 text-white bg-opacity-25"
                       id="editBdate"
-                      placeholder="Edit birthdate"
+                      placeholder="Edit birthplace"
                     />
                   </div>
 

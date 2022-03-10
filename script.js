@@ -19,17 +19,49 @@ const editAge = document.getElementById("editAge");
 const editJersey = document.getElementById("editJersey");
 const editBdate = document.getElementById("editBdate");
 
+const searchBar = document.getElementById("searchbar");
 var OurUrl = "https://hockeyplayers.systementor.se/{michelle@yahoo.com}/player";
-const playerId = document.getElementById("playerid");
 
 class Player {
-  constructor(namn, jersey, age, born) {
+  constructor(id, namn, jersey, age, born) {
+    this.id = id;
     this.namn = namn;
     this.jersey = jersey;
     this.age = age;
     this.born = born;
   }
 }
+
+const players = [];
+
+//get player list
+function playerList() {
+  const request = {
+    headers: {
+      "Content-type": "application/json",
+    },
+    method: "GET",
+  };
+
+  fetch(OurUrl, request)
+    .then((response) => response.json())
+    .then((data) => {
+      data.forEach((item) => {
+        const p = new Player(
+          item.id,
+          item.namn,
+          item.age,
+          item.jersey,
+          item.born
+        );
+        players.push(p);
+      });
+      console.log(players);
+      playerListSuccess(players);
+    });
+}
+
+let currentPlayer = null;
 
 //CREATE TR
 function createNewTr(player) {
@@ -56,309 +88,154 @@ function createNewTr(player) {
   td2.innerHTML = '<i class="bi bi-pencil-square"></i>';
 
   td2.addEventListener("click", () => {
-    // editName.value = player.namn;
-    // editAge.value = player.age;
-    // editJersey.value = player.jersey;
-    // editBdate.value = player.born;
-
-    EditPlayers();
-
-    // sectionEditPlayers.style.display = "block";
-    // sectionListPlayers.style.display = "none";
-    // sectionNewPlayers.style.display = "none";
+    currentPlayer = player;
+    editName.value = player.namn;
+    editAge.value = player.age;
+    editJersey.value = player.jersey;
+    editBdate.value = player.born;
+    sectionEditPlayers.style.display = "block";
+    sectionListPlayers.style.display = "none";
+    sectionNewPlayers.style.display = "none";
   });
 
   return tr;
 }
 
+// Display list returned from Web API call
+function playerListSuccess(items) {
+  productTableBody.innerHTML = "";
+  items.forEach((item) => {
+    let tr = createNewTr(item);
+    productTableBody.appendChild(tr);
+  });
+}
+
+playerList();
+
 //LIST RELATED
 
 listPlayers.addEventListener("click", () => {
-  //    const url =
-  //      "https://hockeyplayers.systementor.se/{michellechicsarmiento@yahoo.com}/player";
-  //   //fetch
-  //   fetch(url)
-  //     .then((data) => data.json())
-  // .then((json) => {
-  //   alert(JSON.stringify(json));
-  // });
-
-  // var request = new XMLHttpRequest();
-
-  // request.open(
-  //   "GET",
-  //   "https://hockeyplayers.systementor.se/{michelle@yahoo.com}/player",
-  //   true
-  // );
-
-  // request.onload = function () {
-  //   // Begin accessing JSON data here
-  //   var data = JSON.parse(this.response);
-
-  //   if (request.status >= 200 && request.status < 400) {
-  //     data.forEach((player) => {
-  //       //console.log(player.age);
-  //       let tr = createNewTr(player);
-  //       productTableBody.appendChild(tr);
-  //     });
-  //   } else {
-  //     console.log("error");
-  //   }
-  // };
-
-  // request.send();
-  playerList();
-
-  // sectionListPlayers.style.display = "block";
-  // sectionNewPlayers.style.display = "none";
-  // sectionEditPlayers.style.display = "none";
-});
-
-// Get all Players to display
-function playerList() {
   sectionEditPlayers.style.display = "none";
   sectionListPlayers.style.display = "block";
   sectionNewPlayers.style.display = "none";
-
-  // Call Web API to get a list of Products
-  $.ajax({
-    url: OurUrl,
-    type: "GET",
-    dataType: "json",
-    success: function (players) {
-      playerListSuccess(players);
-    },
-    error: function (request, message, error) {
-      handleException(request, message, error);
-    },
-  });
-}
-
-// Display list returned from Web API call
-function playerListSuccess(players) {
-  // Iterate over the collection of data
-  $.each(players, function (index, player) {
-    // Add a row to the Product table
-    playerAddRow(player);
-  });
-}
-
-// Add Product row to <table>
-function playerAddRow(player) {
-  // Append row to <table>
-  productTableBody.append(createNewTr(player));
-}
+});
 
 //NEW RELATED
 
 newPlayers.addEventListener("click", () => {
-  playerAdd();
-
   sectionEditPlayers.style.display = "none";
   sectionListPlayers.style.display = "none";
   sectionNewPlayers.style.display = "block";
 });
 
-function playerAdd(player) {
-  // Call Web API to add a new player
-  //player.id = 0; --undefined
-
-  $.ajax({
-    url: OurUrl,
-    type: "POST",
-    contentType: "application/json;charset=utf-8",
-    data: JSON.stringify(player),
-    success: function (player) {
-      playerList();
-    },
-    error: function (request, message, error) {
-      handleException(request, message, error);
-    },
-  });
-}
-
 submitNewButton.addEventListener("click", () => {
-  createPlayerObj();
+  const nyPlayer = {
+    namn: newName.value,
+    age: newAge.value,
+    jersey: newJersey.value,
+    born: newBdate.value,
+  };
 
-  sectionList.style.display = "block";
-  sectionNew.style.display = "none";
-  sectionEdit.style.display = "none";
+  const request = {
+    method: "POST",
+    body: JSON.stringify(nyPlayer),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
+    },
+  };
+
+  fetch(OurUrl, request)
+    .then((response) => response.json())
+    .then((json) => playerList());
+
+  sectionListPlayers.style.display = "block";
+  sectionNewPlayers.style.display = "none";
+  sectionEditPlayers.style.display = "none";
 });
-
-function createPlayerObj() {
-  let nyttNamn = newName.value;
-  let nyttAge = parseInt(newAge.value);
-  let nyttBdate = newBdate.value;
-  let nyttJersey = parseInt(newJersey.value);
-
-  //let playerID = playerId.value(0); --not a function
-
-  let person = new Player(nyttNamn, nyttJersey, nyttAge, nyttBdate);
-  playerAdd(person);
-
-  // let tr = createNewTr(person);
-  // productTableBody.appendChild(tr);
-}
 
 //EDIT Related
 
-//REMOVE this
-editPlayers.addEventListener("click", () => {
-  sectionEditPlayers.style.display = "block";
-  sectionListPlayers.style.display = "none";
-  sectionNewPlayers.style.display = "none";
-});
+//submitEditButton.addEventListener("click", playerUpdate);
 
-function EditPlayers(player_id) {
-  sectionEditPlayers.style.display = "block";
-  sectionListPlayers.style.display = "none";
-  sectionNewPlayers.style.display = "none";
-
-  // Get product id from data- attribute
-  var id = $(player_id).data("id");
-
-  // Store product id in hidden field
-  //$("#productid").val(id);
-
-  playerId.value = id;
-
-  // Call Web API to get a player
-  $.ajax({
-    url: OurUrl + id,
-    type: "GET",
-    dataType: "json",
-    success: function (player) {
-      editFields(player);
-
-      // Change Update Button Text
-      // $("#updateButton").text("Update");
-      //$("#action").text("Edit player");
-    },
-    error: function (request, message, error) {
-      handleException(request, message, error);
-    },
-  });
-}
-
-function editFields(player) {
-  editName = player.namn;
-  editAge = player.age;
-  editJersey = player.jersey;
-  editBdate = player.born;
-}
-
+//function playerUpdate() {
 submitEditButton.addEventListener("click", () => {
-  player = new Player();
-  player.id = playerId.value;
+  //mappa inputs editname,editprice ->objektet
 
-  playerUpdate(player);
-});
-
-function playerUpdate(player) {
-  var url = OurUrl + player.id;
+  currentPlayer.namn = editName.value;
+  currentPlayer.age = editAge.value;
+  currentPlayer.jersey = editJersey.value;
+  currentPlayer.born = editBdate.value;
+  var url = OurUrl + currentPlayer.id;
 
   // Call Web API to update product
-  $.ajax({
-    url: url,
-    type: "PUT",
-    contentType: "application/json;charset=utf-8",
-    data: JSON.stringify(player),
-    success: function (player) {
-      playerList();
+
+  const request = {
+    method: "PUT",
+    body: JSON.stringify({
+      id: currentPlayer.id,
+      namn: editName.value,
+      age: editAge.value,
+      jersey: editJersey.value,
+      born: editBdate.value,
+    }),
+    headers: {
+      "Content-type": "application/json; charset=UTF-8",
     },
-    error: function (request, message, error) {
-      handleException(request, message, error);
-    },
-  });
-}
+  };
+
+  fetch(url, request)
+    //no json response
+    .then((response) => playerListSuccess(players));
+  //.then((json) =>
+
+  //playerListSuccess(players);
+  sectionEditPlayers.style.display = "none";
+  sectionListPlayers.style.display = "block";
+  sectionNewPlayers.style.display = "none";
+});
 
 //search fxn
-//https://www.w3schools.com/howto/howto_js_filter_table.asp
+//https://www.w3schools.com/howto/howto_js_filter_table.asp -- V1
 
-function search_player() {
-  // Declare variables
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("searchbar");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("playersTableList");
-  tr = table.getElementsByTagName("tr");
+//cleaner code
 
-  // Loop through all table rows, and hide those who don't match the search query
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }
-  }
-}
+searchBar.addEventListener("keyup", () => {
+  let filteredPlayers = players.filter((p) =>
+    p.namn.toLowerCase().includes(searchBar.value.toLowerCase())
+  );
+
+  playerListSuccess(filteredPlayers);
+});
 
 //sorting
-//https://www.w3schools.com/howto/howto_js_sort_table.asp
+//https://www.w3schools.com/howto/howto_js_sort_table.asp -v1
+// https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript -v2 //avoid writing onclick on HTML
 
-function sortTable(n) {
-  var table,
-    rows,
-    switching,
-    i,
-    x,
-    y,
-    shouldSwitch,
-    dir,
-    switchcount = 0;
-  table = document.getElementById("playersTableList");
-  switching = true;
-  // Set the sorting direction to ascending:
-  dir = "asc";
-  /* Make a loop that will continue until
-  no switching has been done: */
-  while (switching) {
-    // Start by saying: no switching is done:
-    switching = false;
-    rows = table.rows;
-    /* Loop through all table rows (except the
-    first, which contains table headers): */
-    for (i = 1; i < rows.length - 1; i++) {
-      // Start by saying there should be no switching:
-      shouldSwitch = false;
-      /* Get the two elements you want to compare,
-      one from current row and one from the next: */
-      x = rows[i].getElementsByTagName("TD")[n];
-      y = rows[i + 1].getElementsByTagName("TD")[n];
-      /* Check if the two rows should switch place,
-      based on the direction, asc or desc: */
-      if (dir == "asc") {
-        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
-      } else if (dir == "desc") {
-        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-          // If so, mark as a switch and break the loop:
-          shouldSwitch = true;
-          break;
-        }
-      }
-    }
-    if (shouldSwitch) {
-      /* If a switch has been marked, make the switch
-      and mark that a switch has been done: */
-      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-      switching = true;
-      // Each time a switch is done, increase this count by 1:
-      switchcount++;
-    } else {
-      /* If no switching has been done AND the direction is "asc",
-      set the direction to "desc" and run the while loop again. */
-      if (switchcount == 0 && dir == "asc") {
-        dir = "desc";
-        switching = true;
-      }
-    }
-  }
-}
+const getCellValue = (tr, idx) =>
+  tr.children[idx].innerText || tr.children[idx].textContent;
+
+const comparer = (idx, asc) => (a, b) =>
+  ((v1, v2) =>
+    v1 !== "" && v2 !== "" && !isNaN(v1) && !isNaN(v2)
+      ? v1 - v2
+      : v1.toString().localeCompare(v2))(
+    getCellValue(asc ? a : b, idx),
+    getCellValue(asc ? b : a, idx)
+  );
+
+// do the work...
+
+document.querySelectorAll("th").forEach((th) =>
+  th.addEventListener("click", () => {
+    const table = th.closest("table");
+    const tbody = table.querySelector("tbody");
+    Array.from(tbody.querySelectorAll("tr"))
+      .sort(
+        comparer(
+          Array.from(th.parentNode.children).indexOf(th),
+          (this.asc = !this.asc)
+        )
+      )
+      .forEach((tr) => tbody.appendChild(tr));
+  })
+);
