@@ -1,12 +1,6 @@
 import { players, Player } from "./Data/Player.js";
 import { showSection } from "./UI/Sections.js";
 
-//import { filteredPlayers } from './UI/SearchBar.js';
-
-// const sectionListPlayers = document.getElementById("sectionListPlayers");
-// const sectionNewPlayers = document.getElementById("sectionNewPlayers");
-// const sectionEditPlayers = document.getElementById("sectionEditPlayers");
-
 const productTableBody = document.getElementById("productTableBody");
 const listPlayers = document.getElementById("listPlayers");
 const newPlayers = document.getElementById("newPlayers");
@@ -25,8 +19,9 @@ const editBdate = document.getElementById("editBdate");
 
 const searchBar = document.getElementById("searchbar");
 var OurUrl = "https://hockeyplayers.systementor.se/{michelle@yahoo.com}/player";
+var asc; //global scope strict mode
 
-//get player list
+//GET player list
 function playerList() {
   const request = {
     headers: {
@@ -49,6 +44,7 @@ function playerList() {
         players.push(p);
       });
       console.log(players);
+
       playerListSuccess(players);
     });
 }
@@ -180,20 +176,49 @@ submitEditButton.addEventListener("click", () => {
   showSection("sectionListPlayers");
 });
 
-//search fxn
-//https://www.w3schools.com/howto/howto_js_filter_table.asp -- V1
-
-//cleaner code
+//SEARCH fxn
+//cleaner code -covers all params
+//https://betterprogramming.pub/sort-and-filter-dynamic-data-in-table-with-javascript-e7a1d2025e3c
 searchBar.addEventListener("keyup", () => {
-  let filteredPlayers = players.filter((p) =>
-    p.namn.toLowerCase().includes(searchBar.value.toLowerCase())
-  );
-
-  playerListSuccess(filteredPlayers);
+  filterPlayers();
+  //playerListSuccess(filteredPlayers);
 });
 
-//sorting
-//https://www.w3schools.com/howto/howto_js_sort_table.asp -v1
+function filterPlayers() {
+  // let filteredPlayers = players.filter((p) =>
+  //   p.namn.toLowerCase().includes(searchBar.value.toLowerCase())
+  // );
+  let filteredPlayers = searchBar.value.toUpperCase();
+  let rows = productTableBody.getElementsByTagName("TR");
+  let flag = false;
+
+  for (let row of rows) {
+    let cells = row.getElementsByTagName("TD");
+    for (let cell of cells) {
+      if (cell.textContent.toUpperCase().indexOf(filteredPlayers) > -1) {
+        if (filteredPlayers) {
+          cell.style.backgroundColor = "pink";
+        } else {
+          cell.style.backgroundColor = "";
+        }
+
+        flag = true;
+      } else {
+        cell.style.backgroundColor = "";
+      }
+    }
+
+    if (flag) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
+
+    flag = false;
+  }
+}
+
+//SORTING
 // https://stackoverflow.com/questions/14267781/sorting-html-table-with-javascript -v2 //avoid writing onclick on HTML
 
 const getCellValue = (tr, idx) =>
@@ -216,7 +241,8 @@ document.querySelectorAll("th").forEach((th) =>
       .sort(
         comparer(
           Array.from(th.parentNode.children).indexOf(th),
-          (this.asc = !this.asc)
+          // this.asc=!this.asc --undefined strict mode
+          (asc = !asc)
         )
       )
       .forEach((tr) => tbody.appendChild(tr));
